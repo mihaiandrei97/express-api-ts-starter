@@ -1,5 +1,5 @@
 import express from 'express'
-import emojis from './emojis'
+import users from './users/users.controller'
 
 const router = express.Router()
 
@@ -9,6 +9,6 @@ router.get('/', (req, res) => {
   })
 })
 
-router.use('/emojis', emojis)
+router.use('/users', users)
 
 export default router
