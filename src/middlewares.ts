@@ -23,7 +23,6 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ) {
-  console.log(err.name)
   const statusCode =
     err.name === 'ValidationError'
       ? 400

@@ -58,8 +58,6 @@ router.post('/register', async (req, res, next) => {
       data: createRefreshTokenPayload,
     })
 
-    console.log(savedRefreshToken)
-
     res.json({
       accessToken,
       refreshToken,
@@ -106,11 +104,9 @@ router.post('/login', async (req, res, next) => {
       userId: existingUser.id,
     }
 
-    const savedRefreshToken = await prisma.refreshToken.create({
+    await prisma.refreshToken.create({
       data: createRefreshTokenPayload,
     })
-
-    console.log(savedRefreshToken)
 
     res.json({
       accessToken,
@@ -130,7 +126,6 @@ router.post('/refresh_token', async (req, res, next) => {
     }
     let payload: any = null
 
-    console.log(token, typeof token)
     payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET!)
 
     const user = await prisma.user.findUnique({
