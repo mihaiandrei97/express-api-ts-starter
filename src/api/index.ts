@@ -1,6 +1,6 @@
-import express from 'express'
-import users from './users/users.controller'
-
+import express, { Request } from 'express'
+import { isAuthenticated, RequestCustomInterface } from '../middlewares'
+import auth from './auth/auth.routes'
 const router = express.Router()
 
 router.get('/', (req, res) => {
@@ -9,6 +9,17 @@ router.get('/', (req, res) => {
   })
 })
 
-router.use('/users', users)
+router.get(
+  '/protected',
+  isAuthenticated,
+  (req: RequestCustomInterface, res) => {
+    console.log(req.payload)
+    res.json({
+      message: 'Private data - 🔏👋',
+    })
+  }
+)
+
+router.use('/auth', auth)
 
 export default router
