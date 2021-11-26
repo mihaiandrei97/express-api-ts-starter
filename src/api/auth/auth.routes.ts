@@ -49,6 +49,17 @@ router.post('/register', async (req, res, next) => {
 
     const { accessToken, refreshToken } = generateTokens(user)
 
+    const createRefreshTokenPayload: Prisma.RefreshTokenUncheckedCreateInput = {
+      token: refreshToken,
+      userId: user.id,
+    }
+
+    const savedRefreshToken = await prisma.refreshToken.create({
+      data: createRefreshTokenPayload,
+    })
+
+    console.log(savedRefreshToken)
+
     res.json({
       accessToken,
       refreshToken,
@@ -90,6 +101,17 @@ router.post('/login', async (req, res, next) => {
 
     const { accessToken, refreshToken } = generateTokens(existingUser)
 
+    const createRefreshTokenPayload: Prisma.RefreshTokenUncheckedCreateInput = {
+      token: refreshToken,
+      userId: existingUser.id,
+    }
+
+    const savedRefreshToken = await prisma.refreshToken.create({
+      data: createRefreshTokenPayload,
+    })
+
+    console.log(savedRefreshToken)
+
     res.json({
       accessToken,
       refreshToken,
@@ -122,7 +144,28 @@ router.post('/refresh_token', async (req, res, next) => {
       throw new Error('Not authorized')
     }
 
+    const savedRefreshToken = await prisma.refreshToken.findUnique({
+      where: {
+        token: token,
+      },
+    })
+
+    if (!savedRefreshToken) {
+      res.status(401)
+      throw new Error('Not authorized.')
+    }
+
+    if (savedRefreshToken.userId !== payload.userId) {
+      res.status(401)
+      throw new Error('Not authorized')
+    }
+
     const { accessToken, refreshToken } = generateTokens(user)
+
+    await prisma.refreshToken.update({
+      where: { id: savedRefreshToken.id },
+      data: { token: refreshToken },
+    })
 
     res.json({
       accessToken,
